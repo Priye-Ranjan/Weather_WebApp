@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My First Web Page</title>
+    <style>
+      .cardDesign {
+        /* Permalink - use to edit and share this gradient: https://colorzilla.com/gradient-editor/#e4efc0+0,abbd73+100;Olive+3D+%232 */
+        background: rgb(228, 239, 192); /* Old browsers */
+        background: linear-gradient(
+          to bottom,
+          rgba(228, 239, 192, 1) 0%,
+          rgba(171, 189, 115, 1) 100%
+        ); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+        border: 8px;
+        border-style: solid;
+        border-color: white;
+      }
+      .card_Head {
+        font-family: "Courier New", Courier, monospace;
+        font-size: xx-large;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <h1 align="center">World's Temperature</h1>
+  <body>
+    <div class="container-fluid">
+      <div class="row" id="content">
+        <script>
+          async function getTemp(latlang) {
+            let lat = latlang[0];
+            let long = latlang[1];
+            let response = await fetch(
+              "http://api.openweathermap.org/data/2.5/weather?lat=" +
+                lat +
+                "&lon=" +
+                long +
+                "&appid=8d18f20ad65c62d75c6f989a2bd3061a"
+            );
+            let data = await response.json();
+            //return data;
+            return (Number(data["main"]["temp"]) - 273.15).toFixed(2);
+          }
+          function getData(x) {
+            for (let index = 0; index < x.length; index++) {
+              let country_name = x[index]["name"];
+              let lat = x[index]["latlng"][0];
+              let long = x[index]["latlng"][1];
+              let flag_url = x[index]["flag"];
+              var capital = x[index]["capital"];
+              var region = x[index]["region"];
+              var country_code = x[index]["numericCode"];
+              //console.log(flag_url);
+              var myDiv = document.createElement("div");
+              //myDiv.classList.add("div-style");
+              myDiv.classList.add("col-lg-4");
+              myDiv.classList.add("col-sm-12");
+              myDiv.classList.add("card");
+              myDiv.classList.add("cardDesign");
+
+              myDiv.classList.add("text-center");
+              var card_header = document.createElement("div");
+              card_header.classList.add("card_Head");
+              card_header.classList.add("card-header");
+              card_header.innerText = country_name;
+              myDiv.appendChild(card_header);
+              //Adding Image
+              let image_element = document.createElement("img");
+              image_element.src = flag_url;
+              myDiv.appendChild(image_element);
+
+              let card_body = document.createElement("div");
+              let capital_country = document.createElement("h3"); //Capital
+              capital_country.innerText = "Capital: " + capital;
+              card_body.appendChild(capital_country);
+
+              let region_country = document.createElement("h3"); //Region
+              region_country.classList.add("reg-style");
+              region_country.innerText = "Region: " + region;
+              card_body.appendChild(region_country);
+
+              let code = document.createElement("h3"); //Coountry Code
+              code.classList.add("cod-style");
+              code.innerText = "Country Code: " + country_code;
+              card_body.appendChild(code);
+
+              var temp = document.createElement("button"); //Button
+              temp.classList.add("btn");
+              temp.classList.add("btn-primary");
+
+              temp.innerHTML = "Click for Temperature";
+              temp.onclick = function () {
+                getTemp(x[index]["latlng"]).then((data) =>
+                  alert(
+                    "Current Temperature in " +
+                      country_name +
+                      "is: " +
+                      data +
+                      " °C"
+                  )
+                );
+              };
+              card_body.appendChild(temp);
+              myDiv.appendChild(card_body);
+              content.appendChild(myDiv);
+            }
+            // console.log(x);
+          }
+          async function getCountries() {
+            let response = await fetch("https://restcountries.eu/rest/v2/all");
+            let data = await response.json();
+            return data;
+          }
+          getCountries().then((data) => getData(data));
+          //  console.log(countryData);
+          // let country = getCountries();
+          //console.log(country);
+        </script>
+      </div>
+    </div>
+  </body>
+</html>
